@@ -142,6 +142,84 @@ public class DuAnController {
 		}
 	}
 
+	// lay ra leader dang quan ly 1 du an dang hoat dong cua 1 director
+//	@GetMapping("/get_teamleader_manage_project_has_status_0/{MaPM_input}")
+//	public ResponseEntity<ThamGiaDuAn> Get_director_of_leader(@PathVariable(value = "MaPM_input") String MaPM_input) {
+//		try {
+//
+//			Query q = new Query();
+//			q.addCriteria(Criteria.where("MaPM").is(MaPM_input)).addCriteria(Criteria.where("TrangThai").is(0));
+//			List<DuAn> check = mongoTemplate.find(q, DuAn.class);
+//			
+//			System.out.println("do dai: " + check.size());
+//			System.out.println("mapm input: " + MaPM_input);
+//			System.out.println("mang chua: " + check.isEmpty());
+//			if (check.isEmpty()) {
+//				ThamGiaDuAn resp = new ThamGiaDuAn();
+//				return new ResponseEntity<>(resp, HttpStatus.CREATED);
+//			}
+//			for (DuAn i : check) {
+//				System.out.println("do dai 2:" + check.size());
+//				// tìm ra teamleader đang quản lý project mà thằng director đang quản lý
+//				ThamGiaDuAn tgda = new ThamGiaDuAn();
+//				Query q1 = new Query();
+//
+//				q1.addCriteria(Criteria.where("ID").is(i.get));
+//
+//				tgda = mongoTemplate.findOne(q1, ThamGiaDuAn.class);
+//				System.out.println(tgda.getMaTL());
+//				
+//				System.out.println("do dai 3:" + check.size());
+//				return new ResponseEntity<>(tgda, HttpStatus.CREATED);
+//			}
+//
+//			ThamGiaDuAn resp = new ThamGiaDuAn();
+//			// System.out.println(tgda.getID());
+//			return new ResponseEntity<>(resp, HttpStatus.CREATED);
+//		} catch (Exception e) {
+//			return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
+//		}
+//	}
+
+	@GetMapping("/get_teamleader_manage_project_has_status_0/{MaPM_input}")
+	public ResponseEntity<List_ThamGiaDuAn> Get_director_of_leader(
+			@PathVariable(value = "MaPM_input") String MaPM_input) {
+		try {
+
+			Query q = new Query();
+			q.addCriteria(Criteria.where("MaPM").is(MaPM_input)).addCriteria(Criteria.where("TrangThai").is(0));
+			DuAn check = mongoTemplate.findOne(q, DuAn.class);
+				
+			//System.out.println("do dai: " + check.size());
+			System.out.println("mapm input: " + MaPM_input);
+			System.out.println("mang chua: " + check.getID());
+			if (check.getID() == "") {
+				List_ThamGiaDuAn resp = new List_ThamGiaDuAn();
+				return new ResponseEntity<>(resp, HttpStatus.CREATED);
+			}
+
+			//List<ThamGiaDuAn> result = new ArrayList<ThamGiaDuAn>();
+			
+			Query q1 = new Query();
+			q1.addCriteria(Criteria.where("MaDuAn").is(check.getID()));
+			List<ThamGiaDuAn> check1 = mongoTemplate.find(q1, ThamGiaDuAn.class);
+			
+			if(check1.isEmpty()) {
+				return new ResponseEntity<>(null, HttpStatus.CREATED);
+			}
+			System.out.println(check1.isEmpty());
+//	
+//			if (!check1.isEmpty()) {
+//				result.add(check1);
+//			}
+
+			List_ThamGiaDuAn resp = new List_ThamGiaDuAn(check1);
+			// System.out.println(tgda.getID());
+			return new ResponseEntity<>(resp, HttpStatus.CREATED);
+		} catch (Exception e) {
+			return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+	}
 
 	@GetMapping("/get_list_project_of_staff_by_id")
 	public ResponseEntity<ApiResponse<List<DuAn>>> Get_list_project_of_staff_by_id(
@@ -199,7 +277,7 @@ public class DuAnController {
 			return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 	}
-	
+
 	@GetMapping("/list_staff_manager1/{MaTL_input}")
 	public ResponseEntity<List_ThamGiaDuAn> list_staff_manager1(@PathVariable(value = "MaTL_input") String MaTL_input) {
 		try {
@@ -216,14 +294,47 @@ public class DuAnController {
 			List<ThamGiaDuAn> result = new ArrayList<ThamGiaDuAn>();
 
 			for (ThamGiaDuAn i : check) {
-				// lấy ra dự án mà nhân viên đó đang hoạt động.
+				// lấy ra dự án mà nhân viên đó đang hoạt động
 				Query q1 = new Query();
 				q1.addCriteria(Criteria.where("ID").is(i.getMaDuAn())).addCriteria(Criteria.where("TrangThai").is(0));
 				List<DuAn> check1 = mongoTemplate.find(q1, DuAn.class);
 
 				if (!check1.isEmpty()) {
 					result.add(i);
-				} 
+				}
+			}
+			List_ThamGiaDuAn response = new List_ThamGiaDuAn(result);
+			// System.out.println(tgda.getID());
+			return new ResponseEntity<>(response, HttpStatus.CREATED);
+		} catch (Exception e) {
+			return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+	}
+
+	@GetMapping("/list_staff_manager2/{MaTL_input}")
+	public ResponseEntity<List_ThamGiaDuAn> list_staff_manager2(@PathVariable(value = "MaTL_input") String MaTL_input) {
+		try {
+			Query q = new Query();
+			q.addCriteria(Criteria.where("MaTL").is(MaTL_input));
+			List<ThamGiaDuAn> check = mongoTemplate.find(q, ThamGiaDuAn.class);
+
+			if (check.isEmpty()) {
+				List_ThamGiaDuAn resp = new List_ThamGiaDuAn();
+				return new ResponseEntity<>(resp, HttpStatus.CREATED);
+			}
+			// kiem tra xem nhung data thamgiaduan cua 1 nhan vien co trong bang du an va co
+			// status = 0 hay k?
+			List<ThamGiaDuAn> result = new ArrayList<ThamGiaDuAn>();
+
+			for (ThamGiaDuAn i : check) {
+				// lấy ra dự án mà nhân viên đó đang hoạt động
+				Query q1 = new Query();
+				q1.addCriteria(Criteria.where("ID").is(i.getMaDuAn())).addCriteria(Criteria.where("TrangThai").is(0));
+				List<DuAn> check1 = mongoTemplate.find(q1, DuAn.class);
+
+				if (!check1.isEmpty()) {
+					result.add(i);
+				}
 			}
 			List_ThamGiaDuAn response = new List_ThamGiaDuAn(result);
 			// System.out.println(tgda.getID());
