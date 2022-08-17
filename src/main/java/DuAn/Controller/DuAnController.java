@@ -23,6 +23,7 @@ import org.springframework.web.bind.annotation.RestController;
 import DuAn.model.ThamGiaDuAn;
 import DuAn.model.ApiResponse;
 import DuAn.model.DuAn;
+import DuAn.model.List_ThamGiaDuAn;
 import DuAn.repository.DuAnRepository;
 import DuAn.repository.ThamGiaDuAnRepository;
 
@@ -200,14 +201,14 @@ public class DuAnController {
 	}
 	
 	@GetMapping("/list_staff_manager1/{MaTL_input}")
-	public ResponseEntity<List<ThamGiaDuAn>> list_staff_manager1(@PathVariable(value = "MaTL_input") String MaTL_input) {
+	public ResponseEntity<List_ThamGiaDuAn> list_staff_manager1(@PathVariable(value = "MaTL_input") String MaTL_input) {
 		try {
 			Query q = new Query();
 			q.addCriteria(Criteria.where("MaTL").is(MaTL_input));
 			List<ThamGiaDuAn> check = mongoTemplate.find(q, ThamGiaDuAn.class);
 
 			if (check.isEmpty()) {
-				List<ThamGiaDuAn> resp = new ArrayList<ThamGiaDuAn>();
+				List_ThamGiaDuAn resp = new List_ThamGiaDuAn();
 				return new ResponseEntity<>(resp, HttpStatus.CREATED);
 			}
 			// kiem tra xem nhung data thamgiaduan cua 1 nhan vien co trong bang du an va co
@@ -215,7 +216,7 @@ public class DuAnController {
 			List<ThamGiaDuAn> result = new ArrayList<ThamGiaDuAn>();
 
 			for (ThamGiaDuAn i : check) {
-				// lấy ra dự án mà nhân viên đó đang hoạt động
+				// lấy ra dự án mà nhân viên đó đang hoạt động.
 				Query q1 = new Query();
 				q1.addCriteria(Criteria.where("ID").is(i.getMaDuAn())).addCriteria(Criteria.where("TrangThai").is(0));
 				List<DuAn> check1 = mongoTemplate.find(q1, DuAn.class);
@@ -224,8 +225,9 @@ public class DuAnController {
 					result.add(i);
 				} 
 			}
+			List_ThamGiaDuAn response = new List_ThamGiaDuAn(result);
 			// System.out.println(tgda.getID());
-			return new ResponseEntity<>(result, HttpStatus.CREATED);
+			return new ResponseEntity<>(response, HttpStatus.CREATED);
 		} catch (Exception e) {
 			return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
 		}
