@@ -70,6 +70,7 @@ public class DuAnController {
 		}
 	}
 
+		
 	@GetMapping("/get_manager1_of_staff/{MaNV_input}")
 	public ResponseEntity<ThamGiaDuAn> Get_manager1_of_staff(@PathVariable(value = "MaNV_input") String MaNV_input) {
 		try {
@@ -93,7 +94,7 @@ public class DuAnController {
 				List<DuAn> check1 = mongoTemplate.find(q1, DuAn.class);
 
 				if (check1.isEmpty()) {
-					ThamGiaDuAn resp = new ThamGiaDuAn("53d9cb62-e667-43a5-b1fd-dc2cf6d04419", "", "", "", "");				
+					ThamGiaDuAn resp = new ThamGiaDuAn();
 					return new ResponseEntity<>(resp, HttpStatus.CREATED);
 				} else {
 					return new ResponseEntity<>(i, HttpStatus.CREATED);
@@ -101,13 +102,14 @@ public class DuAnController {
 				}
 			}
 
-			ThamGiaDuAn resp = new ThamGiaDuAn("53d9cb62-e667-43a5-b1fd-dc2cf6d04419", "", "", "", "");
+			ThamGiaDuAn resp = new ThamGiaDuAn();
 			// System.out.println(tgda.getID());
 			return new ResponseEntity<>(resp, HttpStatus.CREATED);
 		} catch (Exception e) {
 			return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 	}
+	
 
 	@GetMapping("/get_manager2_of_staff/{MaNV_input}")
 	public ResponseEntity<DuAn> Get_manager2_of_staff(@PathVariable(value = "MaNV_input") String MaNV_input) {
