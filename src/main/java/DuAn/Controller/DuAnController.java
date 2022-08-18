@@ -19,10 +19,12 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.client.RestTemplate;
 
 import DuAn.model.ThamGiaDuAn;
 import DuAn.model.ApiResponse;
 import DuAn.model.DuAn;
+import DuAn.model.List_Staff;
 import DuAn.model.List_ThamGiaDuAn;
 import DuAn.repository.DuAnRepository;
 import DuAn.repository.ThamGiaDuAnRepository;
@@ -243,32 +245,41 @@ public class DuAnController {
 	}
 
 	@GetMapping("/list_staff_manager1/{MaTL_input}")
-	public ResponseEntity<List_ThamGiaDuAn> list_staff_manager1(@PathVariable(value = "MaTL_input") String MaTL_input) {
+	public ResponseEntity<List_Staff> list_staff_manager1(@PathVariable(value = "MaTL_input") String MaTL_input) {
 		try {
+			//Handle base manager
+			if (MaTL_input.equals("53d9cb62-e667-43a5-b1fd-dc2cf6d04419")) {
+				String uri = "https://gatewayteam07.herokuapp.com/api/staff_basemanager";
+				RestTemplate restTemplate = new RestTemplate();
+				List_Staff user = restTemplate.getForObject(uri, List_Staff.class);
+				return new ResponseEntity<>(user, HttpStatus.CREATED);
+			}
+			
+			//Lay ds thamgia co teamleader tuong ung
 			Query q = new Query();
 			q.addCriteria(Criteria.where("MaTL").is(MaTL_input));
 			List<ThamGiaDuAn> check = mongoTemplate.find(q, ThamGiaDuAn.class);
-
+			
+			//Bao loi neu empty
 			if (check.isEmpty()) {
-				List_ThamGiaDuAn resp = new List_ThamGiaDuAn();
+				List_Staff resp = new List_Staff();
 				return new ResponseEntity<>(resp, HttpStatus.CREATED);
 			}
-			// kiem tra xem nhung data thamgiaduan cua 1 nhan vien co trong bang du an va co
-			// status = 0 hay k?
-			List<ThamGiaDuAn> result = new ArrayList<ThamGiaDuAn>();
-
+			
+			
+			List<String> result = new ArrayList<String>();
+			
+			//Loc nhung thamgiaduan co duan dang hoat dong 
 			for (ThamGiaDuAn i : check) {
-				// lấy ra dự án mà nhân viên đó đang hoạt động
 				Query q1 = new Query();
 				q1.addCriteria(Criteria.where("ID").is(i.getMaDuAn())).addCriteria(Criteria.where("TrangThai").is(0));
 				List<DuAn> check1 = mongoTemplate.find(q1, DuAn.class);
 
 				if (!check1.isEmpty()) {
-					result.add(i);
+					result.add(i.getMaNV());
 				}
 			}
-			List_ThamGiaDuAn response = new List_ThamGiaDuAn(result);
-			// System.out.println(tgda.getID());
+			List_Staff response = new List_Staff(result);
 			return new ResponseEntity<>(response, HttpStatus.CREATED);
 		} catch (Exception e) {
 			return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
