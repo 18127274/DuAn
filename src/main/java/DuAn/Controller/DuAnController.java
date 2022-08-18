@@ -93,7 +93,7 @@ public class DuAnController {
 				List<DuAn> check1 = mongoTemplate.find(q1, DuAn.class);
 
 				if (check1.isEmpty()) {
-					ThamGiaDuAn resp = new ThamGiaDuAn();
+					ThamGiaDuAn resp = new ThamGiaDuAn("53d9cb62-e667-43a5-b1fd-dc2cf6d04419", "", "", "", "");				
 					return new ResponseEntity<>(resp, HttpStatus.CREATED);
 				} else {
 					return new ResponseEntity<>(i, HttpStatus.CREATED);
@@ -142,44 +142,6 @@ public class DuAnController {
 		}
 	}
 
-	// lay ra leader dang quan ly 1 du an dang hoat dong cua 1 director
-//	@GetMapping("/get_teamleader_manage_project_has_status_0/{MaPM_input}")
-//	public ResponseEntity<ThamGiaDuAn> Get_director_of_leader(@PathVariable(value = "MaPM_input") String MaPM_input) {
-//		try {
-//
-//			Query q = new Query();
-//			q.addCriteria(Criteria.where("MaPM").is(MaPM_input)).addCriteria(Criteria.where("TrangThai").is(0));
-//			List<DuAn> check = mongoTemplate.find(q, DuAn.class);
-//			
-//			System.out.println("do dai: " + check.size());
-//			System.out.println("mapm input: " + MaPM_input);
-//			System.out.println("mang chua: " + check.isEmpty());
-//			if (check.isEmpty()) {
-//				ThamGiaDuAn resp = new ThamGiaDuAn();
-//				return new ResponseEntity<>(resp, HttpStatus.CREATED);
-//			}
-//			for (DuAn i : check) {
-//				System.out.println("do dai 2:" + check.size());
-//				// tìm ra teamleader đang quản lý project mà thằng director đang quản lý
-//				ThamGiaDuAn tgda = new ThamGiaDuAn();
-//				Query q1 = new Query();
-//
-//				q1.addCriteria(Criteria.where("ID").is(i.get));
-//
-//				tgda = mongoTemplate.findOne(q1, ThamGiaDuAn.class);
-//				System.out.println(tgda.getMaTL());
-//				
-//				System.out.println("do dai 3:" + check.size());
-//				return new ResponseEntity<>(tgda, HttpStatus.CREATED);
-//			}
-//
-//			ThamGiaDuAn resp = new ThamGiaDuAn();
-//			// System.out.println(tgda.getID());
-//			return new ResponseEntity<>(resp, HttpStatus.CREATED);
-//		} catch (Exception e) {
-//			return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
-//		}
-//	}
 
 	@GetMapping("/get_teamleader_manage_project_has_status_0/{MaPM_input}")
 	public ResponseEntity<List_ThamGiaDuAn> Get_director_of_leader(
