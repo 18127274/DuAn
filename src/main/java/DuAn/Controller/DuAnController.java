@@ -101,7 +101,7 @@ public class DuAnController {
 				}
 			}
 
-			ThamGiaDuAn resp = new ThamGiaDuAn();
+			ThamGiaDuAn resp = new ThamGiaDuAn("53d9cb62-e667-43a5-b1fd-dc2cf6d04419", "", "", "", "");
 			// System.out.println(tgda.getID());
 			return new ResponseEntity<>(resp, HttpStatus.CREATED);
 		} catch (Exception e) {
