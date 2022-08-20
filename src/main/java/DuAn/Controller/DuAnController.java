@@ -68,7 +68,8 @@ public class DuAnController {
 			ApiResponse<List<DuAn>> resp = new ApiResponse<List<DuAn>>(0, "Success", wfhlst);
 			return new ResponseEntity<>(resp, HttpStatus.CREATED);
 		} catch (Exception e) {
-			return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
+			ApiResponse<List<DuAn>> resp = new ApiResponse<List<DuAn>>(1, "Empty data!", null);
+			return new ResponseEntity<>(resp, HttpStatus.CREATED);
 		}
 	}
 
@@ -240,7 +241,8 @@ public class DuAnController {
 			// System.out.println(tgda.getID());
 			return new ResponseEntity<>(resp, HttpStatus.CREATED);
 		} catch (Exception e) {
-			return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
+			ApiResponse<List<DuAn>> resp = new ApiResponse<List<DuAn>>(1,"This staff haven't any participate project", null);
+			return new ResponseEntity<>(resp, HttpStatus.CREATED);
 		}
 	}
 
